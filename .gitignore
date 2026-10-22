@@ -1,0 +1,28 @@
+# Video & Media files
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Environment & Sensitive configs
+.env
+.env.local
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Flutter / Dart build artifacts (if applicable)
+mobile_app/build/
+mobile_app/.dart_tool/
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies
+mobile_app/.packages
+
+# Dependencies & Logs
+node_modules/
+*.log

@@ -1,0 +1,50 @@
+{
+  "name": "MarketPulse Design System",
+  "version": "1.0.0",
+  "colors": {
+    "primary": { "value": "#111827", "description": "Dark slate navy for app bars, primary titles, and high-emphasis elements" },
+    "secondary": { "value": "#2563EB", "description": "Dynamic vibrant blue for accents, active tabs, buttons, and links" },
+    "background": { "value": "#F8FAFC", "description": "Soft crisp off-white for main screen backgrounds" },
+    "card": { "value": "#FFFFFF", "description": "Pure white surface for cards, modals, and list tiles" },
+    "positive": { "value": "#16A34A", "description": "Vibrant emerald green for gains, upward trends, and positive profit/loss" },
+    "negative": { "value": "#DC2626", "description": "Crisp ruby red for drops, downward trends, and losses" },
+    "warning": { "value": "#F59E0B", "description": "Amber yellow for warnings and market closing alerts" },
+    "text": { "value": "#111827", "description": "Primary high-contrast dark text" },
+    "muted": { "value": "#64748B", "description": "Secondary subdued slate text for subtitles, timestamps, and captions" },
+    "border": { "value": "#E2E8F0", "description": "Light slate divider lines and subtle borders" }
+  },
+  "typography": {
+    "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "sizes": {
+      "display": "32px",
+      "heading1": "24px",
+      "heading2": "20px",
+      "body": "15px",
+      "caption": "12px",
+      "priceHero": "36px"
+    },
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    }
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "32px"
+  },
+  "borderRadius": {
+    "sm": "6px",
+    "md": "12px",
+    "lg": "16px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "card": "0 2px 8px rgba(17, 24, 39, 0.05)",
+    "elevated": "0 10px 25px -5px rgba(17, 24, 39, 0.10)"
+  }
+}
