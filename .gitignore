@@ -26,3 +26,4 @@ mobile_app/.packages
 # Dependencies & Logs
 node_modules/
 *.log
+web_app/cache/

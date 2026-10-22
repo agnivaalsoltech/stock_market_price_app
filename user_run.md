@@ -124,6 +124,13 @@ The web project uses **HTML5, CSS3, Bootstrap 5, Vanilla JavaScript, PHP, and Ch
 1. **Dynamic Currency Switching**: In the top-right navbar, click the **Curr: EUR (€)** dropdown and choose **USD ($)**, **GBP (£)**, or **INR (₹)** to recalculate prices across the entire application in real time.
 2. **Dark / Light Mode**: Click the **🌙 / ☀️** toggle button in the navbar to instantly switch between Light Mode and sleek Slate Dark Mode (`#0F172A`).
 3. **Custom Watchlist**: Click the star icon (★) next to any stock on the Markets page or Stock Detail page to add/remove it from your watchlist. Use the **⭐ Watchlist** filter button on the Markets page to see only your tracked equities!
+4. **Twelve Data Real-Time Market Data Integration**:
+   - Click the **📡 API Key / Twelve Data Live** button in the top navigation bar to open the configuration modal, or add your key directly into `.env`:
+     ```env
+     TWELVE_DATA_API_KEY=your_twelve_data_api_key_here
+     ```
+   - **Smart Caching Layer**: Real-time quotes are cached for 60 seconds and charts for 5 minutes to protect against Twelve Data's 8 req/min rate limit on free tier accounts.
+   - **Intact Fallback System**: If no key is set or the API is unreachable, the system seamlessly serves local market data with zero downtime or broken views.
 
 ---
 

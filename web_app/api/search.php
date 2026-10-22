@@ -35,6 +35,17 @@ if ($query === '') {
             $countryResults[] = array_merge(['name' => $cName], $cData);
         }
     }
+
+    // If Twelve Data is configured, optionally enrich with global symbol search
+    if (TwelveDataService::isConfigured() && count($stockResults) < 8) {
+        $liveResults = TwelveDataService::searchSymbols($query);
+        $existingSymbols = array_map('strtoupper', array_column($stockResults, 'symbol'));
+        foreach ($liveResults as $lr) {
+            if (!in_array(strtoupper($lr['symbol']), $existingSymbols)) {
+                $stockResults[] = $lr;
+            }
+        }
+    }
 }
 
 echo json_encode([

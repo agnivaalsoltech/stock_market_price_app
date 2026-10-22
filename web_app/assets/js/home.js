@@ -38,15 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
   syncStarButtons();
 
   if (countrySelect) {
+    // If MarketPulse already has a country selected, sync home dropdown on load
+    if (countrySelect.value !== MarketPulse.currentCountry && MarketPulse.countryCurrencies[MarketPulse.currentCountry]) {
+      countrySelect.value = MarketPulse.currentCountry;
+    }
+
+    // When navbar country changes, sync home page view
+    document.addEventListener('countryChanged', (e) => {
+      if (countrySelect && countrySelect.value !== e.detail.country) {
+        countrySelect.value = e.detail.country;
+        countrySelect.dispatchEvent(new Event('change'));
+      }
+    });
+
     countrySelect.addEventListener('change', async (e) => {
       const selected = e.target.value;
-      localStorage.setItem('mp_country', selected);
-      
-      // Update location badge in navbar
-      const badge = document.getElementById('mpLocationBadge');
-      if (badge) {
-        badge.innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i> ${selected} <i class="bi bi-caret-down-fill small ms-1"></i>`;
-      }
+      MarketPulse.setCountry(selected, true);
 
       // Fetch country search data to dynamically refresh indices and stocks
       try {

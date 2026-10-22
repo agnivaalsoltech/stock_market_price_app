@@ -8,15 +8,32 @@ const MarketPulse = {
   rates: { EUR: 1.0, USD: 1.09, GBP: 0.85, INR: 91.20 },
   symbols: { EUR: '€', USD: '$', GBP: '£', INR: '₹' },
   currentCountry: localStorage.getItem('mp_country') || 'Germany',
+  countryCurrencies: {
+    'Germany': 'EUR',
+    'USA': 'USD',
+    'United Kingdom': 'GBP',
+    'UK': 'GBP',
+    'India': 'INR'
+  },
 
   theme: localStorage.getItem('mp_theme') || 'light',
 
   init() {
     this.initTheme();
+    this.syncCountryFromUrl();
     this.bindCurrencySelector();
+    this.bindCountrySelector();
     this.initGeolocation();
     this.updatePricesOnPage();
     this.checkAuthStatus();
+  },
+
+  syncCountryFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCountry = urlParams.get('country');
+    if (urlCountry && this.countryCurrencies[urlCountry]) {
+      this.setCountry(urlCountry, true);
+    }
   },
 
   initTheme() {
@@ -63,8 +80,50 @@ const MarketPulse = {
     if (!this.rates[curr]) return;
     this.currency = curr;
     localStorage.setItem('mp_currency', curr);
+    const select = document.getElementById('mpCurrencySelect');
+    if (select && select.value !== curr) {
+      select.value = curr;
+    }
     this.updatePricesOnPage();
     document.dispatchEvent(new CustomEvent('currencyChanged', { detail: { currency: curr } }));
+  },
+
+  setCountry(country, autoUpdateCurrency = true) {
+    if (!country) return;
+    this.currentCountry = country;
+    localStorage.setItem('mp_country', country);
+
+    // Sync navbar country select
+    const navCountrySelect = document.getElementById('mpNavbarCountrySelect');
+    if (navCountrySelect && navCountrySelect.value !== country) {
+      navCountrySelect.value = country;
+    }
+
+    // Sync location badge if present
+    const locationBadge = document.getElementById('mpLocationBadge');
+    if (locationBadge) {
+      locationBadge.innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i> ${country} <i class="bi bi-caret-down-fill small ms-1"></i>`;
+    }
+
+    // Sync country select quick on home page if present
+    const homeSelect = document.getElementById('countrySelectQuick');
+    if (homeSelect && homeSelect.value !== country) {
+      homeSelect.value = country;
+    }
+
+    // Sync markets filter select if present
+    const marketsSelect = document.getElementById('countryFilterSelect');
+    if (marketsSelect && marketsSelect.value !== country) {
+      marketsSelect.value = country;
+    }
+
+    // Automatically update the currency to match the country's native currency
+    if (autoUpdateCurrency) {
+      const targetCurrency = this.countryCurrencies[country] || 'EUR';
+      this.setCurrency(targetCurrency);
+    }
+
+    document.dispatchEvent(new CustomEvent('countryChanged', { detail: { country, currency: this.currency } }));
   },
 
   formatPrice(amountInEur) {
@@ -76,6 +135,20 @@ const MarketPulse = {
 
   formatRawNumber(num) {
     return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  },
+
+  bindCountrySelector() {
+    const select = document.getElementById('mpNavbarCountrySelect');
+    if (select) {
+      select.value = this.currentCountry;
+      select.addEventListener('change', (e) => {
+        const newCountry = e.target.value;
+        this.setCountry(newCountry, true);
+        if (window.location.pathname.includes('markets.php')) {
+          window.location.href = 'markets.php?country=' + encodeURIComponent(newCountry);
+        }
+      });
+    }
   },
 
   bindCurrencySelector() {

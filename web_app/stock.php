@@ -3,33 +3,11 @@ require_once __DIR__ . '/config/config.php';
 
 $symbol = isset($_GET['symbol']) ? strtoupper(trim($_GET['symbol'])) : 'SAP';
 
-if (isset($STOCKS[$symbol])) {
-    $stock = $STOCKS[$symbol];
-} else {
-    // Simulated fallback
-    $simPrice = round(100 + (abs(crc32($symbol)) % 300), 2);
-    $simChange = round(((crc32($symbol) % 10) - 4.5), 2);
-    $stock = [
-        'symbol' => $symbol,
-        'companyName' => "$symbol Corp",
-        'exchange' => 'Global XETRA',
-        'country' => 'Global',
-        'currency' => 'EUR',
-        'price' => $simPrice,
-        'open' => round($simPrice * 0.99, 2),
-        'high' => round($simPrice * 1.02, 2),
-        'low' => round($simPrice * 0.98, 2),
-        'previousClose' => round($simPrice - $simChange, 2),
-        'change' => $simChange,
-        'changePercent' => round(($simChange / $simPrice) * 100, 2),
-        'volume' => 1200000,
-        'marketCap' => '€50.0B',
-        'peRatio' => 22.5,
-        'week52High' => round($simPrice * 1.25, 2),
-        'week52Low' => round($simPrice * 0.75, 2),
-        'sector' => 'Technology'
-    ];
-}
+$stock = getStockData($symbol);
+
+$CURRENCY_SYMBOLS = ['EUR' => '€', 'USD' => '$', 'GBP' => '£', 'INR' => '₹'];
+$stockCurrency = $stock['currency'] ?? 'EUR';
+$stockCurrencySymbol = $CURRENCY_SYMBOLS[$stockCurrency] ?? '€';
 
 $pageTitle = $stock['symbol'] . ' - ' . $stock['companyName'] . ' | MarketPulse';
 $currentPage = 'markets';
@@ -66,7 +44,7 @@ $isPos = $stock['change'] >= 0;
                 <div class="d-flex flex-column align-items-md-end">
                     <div class="d-flex align-items-baseline gap-2">
                         <span class="mp-price-large" id="detailPrice" data-base-price="<?php echo $stock['price']; ?>">
-                            €<?php echo number_format($stock['price'], 2); ?>
+                            <?php echo $stockCurrencySymbol . number_format($stock['price'], 2); ?>
                         </span>
                         <span class="<?php echo $isPos ? 'mp-badge-positive' : 'mp-badge-negative'; ?> fs-6" id="detailBadge">
                             <?php echo $isPos ? '<i class="bi bi-caret-up-fill me-1"></i>+' : '<i class="bi bi-caret-down-fill me-1"></i>'; ?><?php echo number_format($stock['change'], 2); ?> (<?php echo number_format($stock['changePercent'], 2); ?>%)
@@ -332,27 +310,27 @@ $isPos = $stock['change'] >= 0;
                 <div class="list-group list-group-flush small">
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">Open</span>
-                        <strong data-base-price="<?php echo $stock['open']; ?>">€<?php echo number_format($stock['open'], 2); ?></strong>
+                        <strong data-base-price="<?php echo $stock['open']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['open'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">Previous Close</span>
-                        <strong data-base-price="<?php echo $stock['previousClose']; ?>">€<?php echo number_format($stock['previousClose'], 2); ?></strong>
+                        <strong data-base-price="<?php echo $stock['previousClose']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['previousClose'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">Day High</span>
-                        <strong class="text-success" data-base-price="<?php echo $stock['high']; ?>">€<?php echo number_format($stock['high'], 2); ?></strong>
+                        <strong class="text-success" data-base-price="<?php echo $stock['high']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['high'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">Day Low</span>
-                        <strong class="text-danger" data-base-price="<?php echo $stock['low']; ?>">€<?php echo number_format($stock['low'], 2); ?></strong>
+                        <strong class="text-danger" data-base-price="<?php echo $stock['low']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['low'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">52-Week High</span>
-                        <strong data-base-price="<?php echo $stock['week52High']; ?>">€<?php echo number_format($stock['week52High'], 2); ?></strong>
+                        <strong data-base-price="<?php echo $stock['week52High']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['week52High'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">52-Week Low</span>
-                        <strong data-base-price="<?php echo $stock['week52Low']; ?>">€<?php echo number_format($stock['week52Low'], 2); ?></strong>
+                        <strong data-base-price="<?php echo $stock['week52Low']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['week52Low'], 2); ?></strong>
                     </div>
                     <div class="list-group-item d-flex justify-content-between px-0 py-2">
                         <span class="text-muted">Trading Volume</span>
@@ -435,7 +413,7 @@ $isPos = $stock['change'] >= 0;
                     <div class="p-3 bg-light rounded-3 mb-3">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted small">Current Market Quote</span>
-                            <strong data-base-price="<?php echo $stock['price']; ?>">€<?php echo number_format($stock['price'], 2); ?></strong>
+                            <strong data-base-price="<?php echo $stock['price']; ?>"><?php echo $stockCurrencySymbol . number_format($stock['price'], 2); ?></strong>
                         </div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted small">Execution Type</span>

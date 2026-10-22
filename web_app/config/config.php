@@ -8,6 +8,15 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Twelve Data Service & Live Data Provider
+require_once __DIR__ . '/../services/TwelveDataService.php';
+
+// Default Twelve Data API Key (can be set here, in .env, or via environment variable)
+if (!defined('TWELVE_DATA_API_KEY')) {
+    define('TWELVE_DATA_API_KEY', getenv('TWELVE_DATA_API_KEY') ?: '');
+}
+TwelveDataService::init();
+
 $MARKET_COUNTRIES = [
     'Germany' => [
         'code' => 'DE',
@@ -610,4 +619,23 @@ function generateHistoricalPoints($basePrice, $range = '1D') {
     }
     
     return $points;
+}
+
+/**
+ * Unified Stock Data Provider
+ * Fetches real-time live data via Twelve Data if configured, or returns local fallback.
+ */
+function getStockData(string $symbol): array {
+    global $STOCKS;
+    return TwelveDataService::getQuote($symbol, $STOCKS);
+}
+
+/**
+ * Unified Stock History Data Provider
+ * Fetches real-time candles via Twelve Data if configured, or generates smooth points.
+ */
+function getStockHistoryData(string $symbol, string $range = '1D'): array {
+    $stock = getStockData($symbol);
+    $basePrice = isset($stock['price']) ? (float)$stock['price'] : 200.0;
+    return TwelveDataService::getTimeSeries($symbol, $range, $basePrice, 'generateHistoricalPoints');
 }

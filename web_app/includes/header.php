@@ -64,10 +64,25 @@ if (!isset($currentPage)) {
                 </ul>
 
                 <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <!-- Location Indicator (Clickable to switch market) -->
-                    <button type="button" id="mpLocationBadge" class="btn btn-sm btn-outline-secondary text-white small d-none d-sm-inline-flex align-items-center gap-1 border-0" data-bs-toggle="modal" data-bs-target="#countrySwitcherModal" title="Click to Switch Country Market">
-                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> Detecting...
+                    <!-- Twelve Data API Live Status Button -->
+                    <?php $twelveDataActive = TwelveDataService::isConfigured(); ?>
+                    <button type="button" class="btn btn-sm <?php echo $twelveDataActive ? 'btn-outline-success' : 'btn-outline-secondary'; ?> text-white small d-inline-flex align-items-center gap-1 border-0" data-bs-toggle="modal" data-bs-target="#apiSettingsModal" title="Twelve Data Live API Settings">
+                        <i class="bi bi-broadcast <?php echo $twelveDataActive ? 'text-success' : 'text-warning'; ?>"></i>
+                        <span class="d-none d-md-inline"><?php echo $twelveDataActive ? 'Twelve Data Live' : 'API Key'; ?></span>
                     </button>
+
+                    <!-- Country Market Switcher Dropdown in Navbar -->
+                    <div class="d-flex align-items-center">
+                        <label for="mpNavbarCountrySelect" class="text-white-50 small me-1 d-none d-lg-inline"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Market:</label>
+                        <select id="mpNavbarCountrySelect" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto; min-width: 125px;" title="Switch Country Market (automatically updates market data and currency)">
+                            <?php if (isset($MARKET_COUNTRIES)): foreach ($MARKET_COUNTRIES as $cName => $c): ?>
+                                <option value="<?php echo $cName; ?>" data-currency="<?php echo $c['currency']; ?>">
+                                    <?php echo $c['flag'] . ' ' . $cName; ?>
+                                </option>
+                            <?php endforeach; endif; ?>
+                        </select>
+                        <button type="button" id="mpLocationBadge" class="d-none" data-bs-toggle="modal" data-bs-target="#countrySwitcherModal"></button>
+                    </div>
 
                     <!-- Currency Switcher -->
                     <div class="d-flex align-items-center">
@@ -107,7 +122,7 @@ if (!isset($currentPage)) {
                 <div class="modal-body p-0">
                     <div class="list-group list-group-flush">
                         <?php if (isset($MARKET_COUNTRIES)): foreach ($MARKET_COUNTRIES as $cName => $c): ?>
-                            <a href="markets.php?country=<?php echo urlencode($cName); ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 px-4">
+                            <a href="markets.php?country=<?php echo urlencode($cName); ?>" onclick="if(window.MarketPulse) MarketPulse.setCountry('<?php echo $cName; ?>', true);" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 px-4">
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="fs-3"><?php echo $c['flag']; ?></span>
                                     <div>

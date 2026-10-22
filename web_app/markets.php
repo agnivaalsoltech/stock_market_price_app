@@ -9,6 +9,9 @@ $selectedCountry = isset($_GET['country']) && isset($MARKET_COUNTRIES[$_GET['cou
     : 'Germany';
 
 $countryInfo = $MARKET_COUNTRIES[$selectedCountry];
+$CURRENCY_SYMBOLS = ['EUR' => '€', 'USD' => '$', 'GBP' => '£', 'INR' => '₹'];
+$countryCurrency = $countryInfo['currency'] ?? 'EUR';
+$countryCurrencySymbol = $CURRENCY_SYMBOLS[$countryCurrency] ?? '€';
 
 // Filter stocks by country
 $countryStocks = array_filter($STOCKS, function($s) use ($selectedCountry) {
@@ -36,7 +39,7 @@ if (empty($countryStocks)) {
             <div class="col-12 col-md-3">
                 <div class="d-flex align-items-center justify-content-md-end gap-2">
                     <label for="countryFilterSelect" class="small fw-semibold text-muted text-nowrap">Country:</label>
-                    <select id="countryFilterSelect" class="form-select form-select-sm" onchange="window.location.href='markets.php?country=' + encodeURIComponent(this.value)">
+                    <select id="countryFilterSelect" class="form-select form-select-sm" onchange="if(window.MarketPulse) MarketPulse.setCountry(this.value, true); window.location.href='markets.php?country=' + encodeURIComponent(this.value)">
                         <?php foreach ($MARKET_COUNTRIES as $cName => $c): ?>
                             <option value="<?php echo $cName; ?>" <?php echo ($cName === $selectedCountry) ? 'selected' : ''; ?>>
                                 <?php echo $c['flag'] . ' ' . $cName; ?>
@@ -82,7 +85,7 @@ if (empty($countryStocks)) {
                     </div>
                     <div class="d-flex align-items-baseline gap-2 mt-2">
                         <span class="fs-4 fw-bold" data-base-price="<?php echo $idx['price']; ?>">
-                            €<?php echo number_format($idx['price'], 2); ?>
+                            <?php echo $countryCurrencySymbol . number_format($idx['price'], 2); ?>
                         </span>
                         <span class="small <?php echo $isPos ? 'text-success' : 'text-danger'; ?> fw-semibold">
                             (<?php echo ($isPos ? '+' : '') . number_format($idx['change'], 2); ?>)
@@ -160,7 +163,7 @@ if (empty($countryStocks)) {
                             </td>
                             <td>
                                 <span class="fw-bold fs-5" data-base-price="<?php echo $stk['price']; ?>">
-                                    €<?php echo number_format($stk['price'], 2); ?>
+                                    <?php echo $countryCurrencySymbol . number_format($stk['price'], 2); ?>
                                 </span>
                             </td>
                             <td>

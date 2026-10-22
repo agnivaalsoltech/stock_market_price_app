@@ -6,6 +6,9 @@ require_once __DIR__ . '/includes/header.php';
 
 $defaultCountry = 'Germany';
 $countryData = $MARKET_COUNTRIES[$defaultCountry];
+$CURRENCY_SYMBOLS = ['EUR' => '€', 'USD' => '$', 'GBP' => '£', 'INR' => '₹'];
+$countryCurrency = $countryData['currency'] ?? 'EUR';
+$countryCurrencySymbol = $CURRENCY_SYMBOLS[$countryCurrency] ?? '€';
 ?>
 
 <div class="container-fluid px-lg-4 py-4">
@@ -71,7 +74,7 @@ $countryData = $MARKET_COUNTRIES[$defaultCountry];
                     </div>
                     <div class="d-flex align-items-baseline gap-2 mt-2">
                         <span class="fs-3 fw-bold" data-base-price="<?php echo $idx['price']; ?>">
-                            €<?php echo number_format($idx['price'], 2); ?>
+                            <?php echo $countryCurrencySymbol . number_format($idx['price'], 2); ?>
                         </span>
                         <span class="small <?php echo $isPos ? 'text-success' : 'text-danger'; ?> fw-semibold">
                             <?php echo ($isPos ? '+' : '') . number_format($idx['change'], 2); ?>
@@ -130,7 +133,7 @@ $countryData = $MARKET_COUNTRIES[$defaultCountry];
                                     </td>
                                     <td>
                                         <span class="fw-bold" data-base-price="<?php echo $stk['price']; ?>">
-                                            €<?php echo number_format($stk['price'], 2); ?>
+                                            <?php echo $countryCurrencySymbol . number_format($stk['price'], 2); ?>
                                         </span>
                                     </td>
                                     <td>
